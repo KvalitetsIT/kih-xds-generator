@@ -1,0 +1,69 @@
+spring:
+  output:
+    ansi:
+      enabled: detect
+
+logging:
+  level:
+    root: warn
+    org:
+      apache:
+        cxf: warn
+    io:
+      oth:
+        xdsgenerator:
+          handlers:
+            KihDataController: info
+
+
+  pattern:
+    dateformat: yyyy-MM-dd HH:mm:ss.SSS
+    console: "%d %-5p %-30.30logger{29}: %m %n %ex{2}"
+
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: always
+
+server:
+  error:
+    include-stacktrace: never
+  port: 9010
+  tomcat:
+    accesslog:
+      enabled: true
+      pattern: "%t sip=%h r=\"%r\" htsc=%s B=%b tt=%D tid=%I ua=\"%{User-Agent}i\""
+    basedir: tomcat
+
+
+
+xds:
+  repositoryuniqueid: 1.2.208.176.43210.8.1.29
+  generate:
+    # set to false for kih repo
+    documentid: true
+  iti41:
+    endpoint: http://localhost:8020/axis2/services/xdsrepositoryb
+
+
+sor:
+  code: 6071000016008
+  name: TeleCare Nord
+
+
+# DGWS Setup for vaults and what note
+dgws:
+  enabled: false
+  sts:
+    url: https://test2.ekstern-test.nspop.dk:8443/sts/services/SecurityTokenService
+  keystore:
+    type: production
+    alias: nets danid a/s - tu voces gyldig
+    filename: classpath:VOCES_gyldig_2022.p12
+    password: Test1234
+  certificate:
+    itsystem: TRUST2408 Systemtest XIX CA
+    orgname: NETS DANID A/S
+    cvr: 30808460

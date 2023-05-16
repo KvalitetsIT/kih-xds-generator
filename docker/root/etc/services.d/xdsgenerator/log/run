@@ -1,0 +1,8 @@
+#!/bin/sh
+
+LOGDIR=/var/log/xdsgenerator
+
+if [ ! -d $LOGDIR/stdout ]; then mkdir -p $LOGDIR/stdout; chown nobody $LOGDIR/stdout; fi
+if [ ! -d $LOGDIR/tomcat ]; then mkdir -p $LOGDIR/tomcat; chown -R opentele:opentele $LOGDIR/tomcat; fi
+
+exec s6-setuidgid nobody s6-log -bp -- T n1 s1000000 $LOGDIR/stdout
