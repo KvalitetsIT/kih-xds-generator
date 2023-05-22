@@ -8,65 +8,10 @@
     <version>unspecified</version>
     <build>
         <plugins>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.0.0</version>
-            </plugin>
-
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-install-plugin</artifactId>
-                <version>2.5.1</version>
-                <executions>
-                    <execution>
-                        <configuration>
-                            <groupId>dk.sosi</groupId>
-                            <artifactId>seal</artifactId>
-                            <version>1.0</version>
-                            <packaging>jar</packaging>
-                            <file>${basedir}/lib/seal.jar</file>
-                            <generatePom>true</generatePom>
-                        </configuration>
-                        <id>install-jar-lib-seal</id>
-                        <goals>
-                            <goal>install-file</goal>
-                        </goals>
-                        <phase>install</phase>
-                    </execution>
-                    <execution>
-                        <configuration>
-                            <groupId>dk.s4.hl7</groupId>
-                            <artifactId>cda</artifactId>
-                            <version>1.0</version>
-                            <packaging>jar</packaging>
-                            <file>${basedir}/lib/builders-bcfa38bef51fce1c85446be5469c9fb2fd7a4b99.jar</file>
-                            <generatePom>true</generatePom>
-                        </configuration>
-                        <id>install-jar-lib-builders-cda</id>
-                        <goals>
-                            <goal>install-file</goal>
-                        </goals>
-                        <phase>install</phase>
-                    </execution>
-                    <execution>
-                        <configuration>
-                            <groupId>dk.s4.hl7</groupId>
-                            <artifactId>util</artifactId>
-                            <version>1.0</version>
-                            <packaging>jar</packaging>
-                            <file>${basedir}/lib/builders-bcfa38bef51fce1c85446be5469c9fb2fd7a4b99.jar</file>
-                            <generatePom>true</generatePom>
-                        </configuration>
-                        <id>install-jar-lib-builders-util</id>
-                        <goals>
-                            <goal>install-file</goal>
-                        </goals>
-                        <phase>install</phase>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>
@@ -75,16 +20,22 @@
         <dependency>
             <groupId>dk.sosi</groupId>
             <artifactId>seal</artifactId>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/seal.jar</systemPath>
             <version>1.0</version>
         </dependency>
         <dependency>
             <groupId>dk.s4.hl7</groupId>
             <artifactId>cda</artifactId>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/builders-bcfa38bef51fce1c85446be5469c9fb2fd7a4b99.jar</systemPath>
             <version>1.0</version>
         </dependency>
         <dependency>
             <groupId>dk.s4.hl7</groupId>
             <artifactId>util</artifactId>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/builders-bcfa38bef51fce1c85446be5469c9fb2fd7a4b99.jar</systemPath>
             <version>1.0</version>
         </dependency>
         <dependency>
