@@ -1,9 +1,0 @@
-/home/simon/Git/kih-xds-generator/src/test/java/io/oth/xdsgenerator/model/kih/CitizenTest.java
-/home/simon/Git/kih-xds-generator/src/test/java/io/oth/xdsgenerator/model/kih/AddressPostalTest.java
-/home/simon/Git/kih-xds-generator/src/test/java/io/oth/xdsgenerator/service/KihToPhmrMappingServiceTest.java
-/home/simon/Git/kih-xds-generator/src/test/java/io/oth/xdsgenerator/service/phmr/PhmrRequestServiceTest.java
-/home/simon/Git/kih-xds-generator/src/test/java/io/oth/xdsgenerator/service/cda/CDAParserTest.java
-/home/simon/Git/kih-xds-generator/src/test/java/io/oth/xdsgenerator/service/phmr/PhmrBuilderServiceTest.java
-/home/simon/Git/kih-xds-generator/src/test/java/io/oth/xdsgenerator/service/phmr/PersonalHealthMonitoringReportRequestHelper.java
-/home/simon/Git/kih-xds-generator/src/test/java/io/oth/xdsgenerator/service/TestConfiguration.java
-/home/simon/Git/kih-xds-generator/src/test/java/io/oth/xdsgenerator/service/phmr/PhmrParserServiceTest.java

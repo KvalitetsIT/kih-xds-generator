@@ -1,9 +1,0 @@
-io/oth/xdsgenerator/service/phmr/PersonalHealthMonitoringReportRequestHelper.class
-io/oth/xdsgenerator/service/phmr/PhmrBuilderServiceTest.class
-io/oth/xdsgenerator/model/kih/CitizenTest.class
-io/oth/xdsgenerator/service/phmr/PhmrRequestServiceTest.class
-io/oth/xdsgenerator/model/kih/AddressPostalTest.class
-io/oth/xdsgenerator/service/cda/CDAParserTest.class
-io/oth/xdsgenerator/service/KihToPhmrMappingServiceTest.class
-io/oth/xdsgenerator/service/TestConfiguration.class
-io/oth/xdsgenerator/service/phmr/PhmrParserServiceTest.class
