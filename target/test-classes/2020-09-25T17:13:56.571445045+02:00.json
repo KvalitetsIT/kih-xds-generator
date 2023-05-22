@@ -1,0 +1,52 @@
+{
+  "SelfMonitoringCollection": [
+    {
+      "Citizen": {
+        "PersonCivilRegistrationIdentifier": "2303439995"
+      },
+      "SelfMonitoringSamples": [
+        {
+          "SelfMonitoringSample": {
+            "CreatedByText": "OTH Test",
+            "LaboratoryReports": [
+              {
+                "AnalysisText": "Arm\u2014Blodtryk(systolisk); tryk = ? mmHg",
+                "UuidIdentifier": "9257c1e2-3da6-41e4-83fe-b0d92ae51124",
+                "CreatedDateTime": "2019-01-01T10:10:10+01:00",
+                "ResultText": "130",
+                "ResultUnitText": "mmHg",
+                "ResultTypeOfInterval": "unspecified",
+                "NationalSampleIdentifier": "9999999999",
+                "IupacIdentifier": "DNK05472",
+                "ProducerOfLabResult": {
+                  "Identifier": "Patient m\u00e5lt",
+                  "IdentifierCode": "POT"
+                },
+                "MeasurementTransferredBy": "automatic",
+                "MeasurementLocation": "home",
+                "MeasurementScheduled": "scheduled"
+              },
+              {
+                "AnalysisText": "Arm\u2014Blodtryk(diastolisk); tryk = ? mmHg",
+                "UuidIdentifier": "c32e06c8-9a51-4422-ab1a-ca383d3927b3",
+                "CreatedDateTime": "2019-01-01T10:10:10+01:00",
+                "ResultText": "80",
+                "ResultUnitText": "mmHg",
+                "ResultTypeOfInterval": "unspecified",
+                "NationalSampleIdentifier": "9999999999",
+                "IupacIdentifier": "DNK05473",
+                "ProducerOfLabResult": {
+                  "Identifier": "Patient m\u00e5lt",
+                  "IdentifierCode": "POT"
+                },
+                "MeasurementTransferredBy": "automatic",
+                "MeasurementLocation": "home",
+                "MeasurementScheduled": "scheduled"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

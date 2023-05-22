@@ -1,0 +1,44 @@
+    {
+  "Citizen": {
+    "PersonCivilRegistrationIdentifier": "2303439995",
+    "PersonNameStructure": {
+      "PersonGivenName": "FornavnM33",
+      "PersonSurName": "EfternavnM33"
+    },
+    "AddressPostal": {
+      "StreetName": "AdresseM33 33",
+      "PostCodeIdentifier": "9998",
+      "MunicipalityName": "ByM33"
+    },
+    "PhoneNumberSubscriber": {
+      "PhoneNumberIdentifier": "99999999",
+      "PhoneNumberUse": "W"
+    }
+  },
+  "SelfMonitoringSamples": [
+    {
+      "SelfMonitoringSample": {
+        "CreatedByText": "OTH Test",
+        "LaboratoryReports": [
+          {
+            "UuidIdentifier": "e7896d1e-872d-4b46-baf8-87fe0a264482",
+            "CreatedDateTime": "2019-01-01T10:10:10+01:00",
+            "AnalysisText": "Pt—Legeme; masse = ? kg",
+            "ResultText": "84.9",
+            "ResultUnitText": "kg",
+            "ResultTypeOfInterval": "unspecified",
+            "NationalSampleIdentifier": "9999999999",
+            "IupacIdentifier": "NPU03804",
+            "ProducerOfLabResult": {
+              "Identifier": "Patient målt",
+              "IdentifierCode": "POT"
+            },
+            "MeasurementTransferredBy": "automatic",
+            "MeasurementLocation": "home",
+            "MeasurementScheduled": "scheduled"
+          }
+        ]
+      }
+    }
+  ]
+}
