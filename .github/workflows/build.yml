@@ -15,6 +15,7 @@ jobs:
     - name: Setup env variables
       run: |
         echo "DOCKER_SERVICE=kvalitetsit/kih-xds-generator" >> $GITHUB_ENV
+        echo "DOCKER_DOCUMENTATION=kvalitetsit/kih-xds-generator-documentation" >> $GITHUB_ENV
 
 # Checkout source code
     - uses: actions/checkout@v3
