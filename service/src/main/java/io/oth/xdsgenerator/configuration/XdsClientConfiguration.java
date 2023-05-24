@@ -1,20 +1,13 @@
 package io.oth.xdsgenerator.configuration;
 
-import java.security.cert.X509Certificate;
-
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-import javax.xml.namespace.QName;
-
+import io.oth.xdsgenerator.dgws.STSRequestHelper;
+import io.oth.xdsgenerator.dgws.SosiInterceptor;
 import org.apache.cxf.configuration.jsse.TLSClientParameters;
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.frontend.ClientProxy;
 import org.apache.cxf.interceptor.LoggingInInterceptor;
 import org.apache.cxf.interceptor.LoggingOutInterceptor;
 import org.apache.cxf.transport.http.HTTPConduit;
-import org.apache.xpath.operations.Bool;
 import org.openehealth.ipf.commons.ihe.ws.WsTransactionConfiguration;
 import org.openehealth.ipf.commons.ihe.xds.core.XdsClientFactory;
 import org.openehealth.ipf.commons.ihe.xds.iti41.Iti41PortType;
@@ -27,8 +20,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 
-import io.oth.xdsgenerator.dgws.STSRequestHelper;
-import io.oth.xdsgenerator.dgws.SosiInterceptor;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import javax.xml.namespace.QName;
+import java.security.cert.X509Certificate;
 
 /**
  * Sets up XDS client for posting to xds repository
@@ -40,7 +37,7 @@ public class XdsClientConfiguration {
     @Autowired
     private ApplicationContext appContext;
 
-    private TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
+    private TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
         public java.security.cert.X509Certificate[] getAcceptedIssuers() {
             return null;
         }
@@ -51,7 +48,7 @@ public class XdsClientConfiguration {
         public void checkServerTrusted(X509Certificate[] certs, String authType) {
         }
 
-    } };
+    }};
 
     @Value("${xds.iti41.endpoint}")
     String xdsIti41Endpoint;
