@@ -54,6 +54,7 @@ class KihToPhmrMappingServiceTest {
 
     @Test
     void map() {
+        assertTrue(false);
         log.info("Starting with " + input);
 
         // KihToPhmrMappingService service = new KihToPhmrMappingService(defaultName + "=" + defaultCode,
