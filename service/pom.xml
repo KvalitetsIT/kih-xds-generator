@@ -209,7 +209,7 @@
         <dependency>
             <groupId>org.openehealth.ipf.commons</groupId>
             <artifactId>ipf-commons-ihe-core</artifactId>
-            <version>3.0.4</version>
+            <version>4.6.1</version>
             <exclusions>
                 <exclusion>
                     <artifactId>slf4j-log4j12</artifactId>
