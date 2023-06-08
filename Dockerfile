@@ -13,7 +13,7 @@ COPY lib lib
 
 RUN ./gradlew -Pversion=$version build && ls -al build/libs/
 
-FROM alpine:3.18 as runner
+FROM test
 
 ARG version=1.0.0
 ENV ENV=production \
@@ -25,12 +25,10 @@ ENV ENV=production \
 RUN mkdir /app
 
 COPY --from=builder /app/build/libs/xds-generator-$VERSION.jar /app/xds-generator.jar
-
 RUN apk add --no-cache curl openjdk11-jre-headless ca-certificates nss && \
     echo "Build complete"
 
 ADD docker/root /
-
 EXPOSE 9010
 ENTRYPOINT ["/init"]
 CMD []
