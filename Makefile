@@ -60,7 +60,7 @@ bootRun: ## Start boot run - called from start
 buildcontainer: ## Builds docker container
 	@docker build          \
 	--build-arg version=${DOCKER_TAG}       \
-	-t oth/xdsgenerator:${DOCKER_TAG} .
+	-t kvalitetsit/kih-xds-generator:${DOCKER_TAG} .
 
 docker-run: buildcontainer ## Runs application in container
 	docker run --rm -d --name xdsgenerator --network openteledev -p 9010:9010 -v $$(pwd)/docker/conf/application.yaml:/app/application.yaml:ro \
