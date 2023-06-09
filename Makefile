@@ -82,7 +82,7 @@ tag-container: ### tags docker image
 	@echo "Done tagging"
 
 docker-run: buildcontainer ### Runs application in container
-	docker run --rm -d --name xdsgenerator --network openteledev -p 9010:9010 -v $$(pwd)/docker/conf/application.yaml:/app/application.yaml:ro \
+	docker run --rm --name xdsgenerator --network openteledev -p 9010:9010 -v $$(pwd)/docker/conf/application.yaml:/app/application.yaml:ro \
     -v $$(pwd)/src/main/resources/VOCES_gyldig_2022.p12:/app/VOCES_gyldig_2022.p12:ro \
 	oth/xdsgenerator:${DOCKER_TAG}
 
