@@ -1,7 +1,7 @@
-#!/usr/bin/execlineb -P
+#!/command/execlineb -P
 
 with-contenv
-s6-envuidgid opentele
+s6-envuidgid nobody
 fdmove -c 2 1
 s6-envdir /etc/services.d/xdsgenerator/envdir
 cd /app

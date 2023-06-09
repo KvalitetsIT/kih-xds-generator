@@ -82,15 +82,16 @@ tag-container: ### tags docker image
 	@echo "Done tagging"
 
 docker-run: buildcontainer ### Runs application in container
-	docker run --rm --name xdsgenerator --network openteledev -p 9010:9010 -v $$(pwd)/docker/conf/application.yaml:/app/application.yaml:ro \
-    -v $$(pwd)/src/main/resources/VOCES_gyldig_2022.p12:/app/VOCES_gyldig_2022.p12:ro \
+	docker run --rm -d --name xdsgenerator --network openteledev -p 9010:9010 -v $$(pwd)/docker/conf/application.yaml:/app/application.yaml:ro \
+    -v $$(pwd)/docker/conf/VOCES_gyldig_2022.p12:/app/VOCES_gyldig_2022.p12:ro \
 	oth/xdsgenerator:${DOCKER_TAG}
 
 docker-stop: ### Stop running container
 	@docker stop xdsgenerator
 
 docker-enter: ### Enter container
-	@docker exec -it xdsgenerator bash
+	@docker exec -it xdsgenerator ash
+
 
 docker-app-logs: ### Application logs from docker container
 	@docker exec -it xdsgenerator tail -F /var/log/xdsgenerator/stdout/current /var/log/xdsgenerator/tomcat/1
