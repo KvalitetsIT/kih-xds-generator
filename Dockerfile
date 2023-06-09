@@ -13,16 +13,21 @@ COPY lib lib
 
 RUN ./gradlew -Pversion=$version build && ls -al build/libs/ && echo "Is it set? $AWS_ACCESS_KEY_ID"
 
-FROM 401334847138.dkr.ecr.eu-west-1.amazonaws.com/oth/base:latest
+FROM alpine:latest
 
 MAINTAINER "OpenTeleHealth Tech Support <tech-support@opentelehealth.com>"
-
+ARG S6_OVERLAY_VERSION=3.1.5.0
 ARG version=1.0.0
 ENV ENV=production \
     TZ=Europe/Copenhagen \
     VERSION=$version \
     TIMEZONE=$TZ \
     LANG=C.UTF-8
+
+ADD https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-noarch.tar.xz /tmp
+RUN tar -C / -Jxpf /tmp/s6-overlay-noarch.tar.xz
+ADD https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-x86_64.tar.xz /tmp
+RUN tar -C / -Jxpf /tmp/s6-overlay-x86_64.tar.xz
 
 RUN mkdir /app
 
