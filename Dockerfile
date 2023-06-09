@@ -11,12 +11,13 @@ COPY settings.gradle .
 COPY src src
 COPY lib lib
 
-RUN ./gradlew -Pversion=$version build && ls -al build/libs/ && echo "Is it set? $AWS_ACCESS_KEY_ID"
+RUN ./gradlew -Pversion=$version build && ls -al build/libs/
 
 FROM alpine:latest
 
 MAINTAINER "OpenTeleHealth Tech Support <tech-support@opentelehealth.com>"
 ARG S6_OVERLAY_VERSION=3.1.5.0
+
 ARG version=1.0.0
 ENV ENV=production \
     TZ=Europe/Copenhagen \
@@ -39,5 +40,4 @@ RUN apk add --no-cache curl openjdk11-jre-headless ca-certificates nss && \
 ADD docker/root /
 
 EXPOSE 9010
-ENTRYPOINT ["/init"]
-CMD []
+ENTRYPOINT exec java -jar /app/xds-generator.jar
