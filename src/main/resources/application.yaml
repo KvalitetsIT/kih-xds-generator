@@ -61,7 +61,7 @@ dgws:
   keystore:
     type: production
     alias: nets danid a/s - tu voces gyldig
-    filename: file:/app/VOCES_gyldig_2022.p12
+    filename: classpath:VOCES_gyldig_2022.p12
     password: Test1234
   certificate:
     itsystem: TRUST2408 Systemtest XIX CA
