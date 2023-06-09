@@ -13,6 +13,9 @@ COPY lib lib
 
 RUN ./gradlew -Pversion=$version build && ls -al build/libs/
 
+FROM builder as test
+CMD ["./gradlew", "test", "--info"]
+
 FROM alpine:latest
 
 ARG S6_OVERLAY_VERSION=3.1.5.0

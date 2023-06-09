@@ -1,0 +1,23 @@
+name: Pull Request CI
+
+on:
+  pull_request: ~
+
+jobs:
+  pr_build:
+    runs-on: ubuntu-latest
+
+    steps:
+# Checkout source code
+    - uses: actions/checkout@v3
+
+    - name: Build
+      run: make build-container
+
+    - name: Test
+      run: make docker-run-tests
+
+    - name: Save PR number
+      run: |
+        mkdir -p ./pr
+        echo ${{ github.event.number }} > ./pr/NR

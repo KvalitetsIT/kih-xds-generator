@@ -57,12 +57,24 @@ endif
 bootRun: ## Start boot run - called from start
 	./gradlew bootRun
 
-buildcontainer: ## Builds docker container
+build-container: ## Builds docker container
 	@docker build          \
 	--build-arg version=${DOCKER_TAG}       \
 	-t kvalitetsit/kih-xds-generator:${DOCKER_TAG} .
 
-docker-run: buildcontainer ## Runs application in container
+build-test-container: ## Builds docker container for running tests
+	@docker build          \
+	--build-arg version=${DOCKER_TAG}       \
+	-t test-container          \
+	--target test .
+
+docker-run-tests: build-test-container ## Runs tests in container
+	docker run --rm --name docker-run-tests test-container
+
+docker-run: build-container ## Runs application in container
+	docker run --rm --name kih-xds-generator --network openteledev -p 9010:9010 kvalitetsit/kih-xds-generator:${DOCKER_TAG}
+
+docker-run: build-container ## Runs application in container
 	docker run --rm --name kih-xds-generator --network openteledev -p 9010:9010 kvalitetsit/kih-xds-generator:${DOCKER_TAG}
 
 docker-stop: ## Stop running container
