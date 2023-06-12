@@ -29,12 +29,18 @@ repositories {
         url "https://repository.jboss.org/nexus/content/repositories/thirdparty-releases/"
     }
 
+    maven {
+        url "https://nexus.nspop.dk/nexus/content/groups/public/"
+    }
+
 }
 
 
 dependencies {
     implementation files("lib/builders-bcfa38bef51fce1c85446be5469c9fb2fd7a4b99.jar")
-    implementation files("lib/seal.jar")
+    implementation (group: 'dk.sosi.seal', name: 'seal', version: '2.6.22') {
+        exclude group: "axis", module: "axis-wsdl4j"
+    }
     implementation("org.apache.santuario:xmlsec:1.4.8") {
         exclude group: "commons-logging", module: "commons-logging"
     }

@@ -147,7 +147,7 @@ public class SosiUtil {
 		CredentialPair pair = vault.getSystemCredentialPair();
 		if (pair == null || pair.getCertificate() == null) {
 			throw new IOException("Could not load certificate from vault: "
-					+ vault.getKeyStore().getProvider().getName() + " with alias: " + CredentialVault.ALIAS_SYSTEM);
+					+ vault.getKeyStore().getProvider().getName() + " with alias: " + CredentialVault.KEY_ALIAS_SYSTEM);
 		} else {
 			log.info("CredentialValue loaded correctly");
 			return vault;
