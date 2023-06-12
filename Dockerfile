@@ -13,9 +13,11 @@ COPY lib lib
 
 RUN ./gradlew -Pversion=$version build && ls -al build/libs/
 
+FROM builder as test
+CMD ["./gradlew", "test", "--info"]
+
 FROM alpine:latest
 
-MAINTAINER "OpenTeleHealth Tech Support <tech-support@opentelehealth.com>"
 ARG S6_OVERLAY_VERSION=3.1.5.0
 
 ARG version=1.0.0
@@ -25,11 +27,6 @@ ENV ENV=production \
     TIMEZONE=$TZ \
     LANG=C.UTF-8
 
-ADD https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-noarch.tar.xz /tmp
-RUN tar -C / -Jxpf /tmp/s6-overlay-noarch.tar.xz
-ADD https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VERSION}/s6-overlay-x86_64.tar.xz /tmp
-RUN tar -C / -Jxpf /tmp/s6-overlay-x86_64.tar.xz
-
 RUN mkdir /app
 
 COPY --from=builder /app/build/libs/xds-generator-$VERSION.jar /app/xds-generator.jar
@@ -37,7 +34,7 @@ COPY --from=builder /app/build/libs/xds-generator-$VERSION.jar /app/xds-generato
 RUN apk add --no-cache curl openjdk11-jre-headless ca-certificates nss && \
     echo "Build complete"
 
-ADD docker/root /
+COPY docker/conf/ /app/conf/
 
 EXPOSE 9010
-ENTRYPOINT exec java -jar /app/xds-generator.jar
+ENTRYPOINT exec java -jar /app/xds-generator.jar --spring.config.location=file:/app/conf/application.yaml

@@ -20,7 +20,7 @@ REFLEX := $(shell command -v reflex 2> /dev/null) # Helps  to restart on changes
 ## #################################################################
 ## Targets
 ## #################################################################
-documentation: README.org ### Compiles the README.md from README.org
+documentation: README.org ## Compiles the README.md from README.org
 	emacs README.org --batch -f org-md-export-to-markdown --kill
 
 clean: ## Cleans source code and dependencies
@@ -54,63 +54,37 @@ else
 	./gradlew bootRun
 endif
 
-bootRun: ### Start boot run - called from start
+bootRun: ## Start boot run - called from start
 	./gradlew bootRun
 
-tag: ## Set version
-	@echo "tagging repo... "
-ifndef TAG
-	$(error "TAG is not - please set it")
-else
-	@echo "Version is: $$TAG"
-	@echo "Tagging version..."
-	git tag -a $$TAG -m "Tagging $$TAG" -f
-	@git push --tags
-endif
-
-buildcontainer: ### Builds docker container
+build-container: ## Builds docker container
 	@docker build          \
 	--build-arg version=${DOCKER_TAG}       \
-	-t oth/xdsgenerator:${DOCKER_TAG} .
+	-t kvalitetsit/kih-xds-generator:${DOCKER_TAG} .
 
-ecr-login: ### Performs ECR login
-	aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin 401334847138.dkr.ecr.eu-west-1.amazonaws.com
+build-test-container: ## Builds docker container for running tests
+	@docker build          \
+	--build-arg version=${DOCKER_TAG}       \
+	-t test-container          \
+	--target test .
 
-tag-container: ### tags docker image
-	@echo "tagging - ${DOCKER_TAG}"
-	docker tag oth/xdsgenerator:${DOCKER_TAG} 401334847138.dkr.ecr.eu-west-1.amazonaws.com/oth/xdsgenerator:${DOCKER_TAG}
-	@echo "Done tagging"
+docker-run-tests: build-test-container ## Runs tests in container
+	docker run --rm --name docker-run-tests test-container
 
-docker-run: buildcontainer ### Runs application in container
-	docker run --rm -d --name xdsgenerator --network openteledev -p 9010:9010 -v $$(pwd)/docker/conf/application.yaml:/app/application.yaml:ro \
-    -v $$(pwd)/docker/conf/VOCES_gyldig_2022.p12:/app/VOCES_gyldig_2022.p12:ro \
-	oth/xdsgenerator:${DOCKER_TAG}
+docker-run: build-container ## Runs application in container
+	docker run --rm --name kih-xds-generator --network openteledev -p 9010:9010 kvalitetsit/kih-xds-generator:${DOCKER_TAG}
 
-docker-stop: ### Stop running container
-	@docker stop xdsgenerator
+docker-run: build-container ## Runs application in container
+	docker run --rm --name kih-xds-generator --network openteledev -p 9010:9010 kvalitetsit/kih-xds-generator:${DOCKER_TAG}
 
-docker-enter: ### Enter container
-	@docker exec -it xdsgenerator ash
+docker-stop: ## Stop running container
+	@docker stop kih-xds-generator
 
+docker-enter: ## Enter container
+	@docker exec -it kih-xds-generator ash
 
-docker-app-logs: ### Application logs from docker container
-	@docker exec -it xdsgenerator tail -F /var/log/xdsgenerator/stdout/current /var/log/xdsgenerator/tomcat/1
-
-push-to-ecr: ### Push container to ecr
-	@echo "Pushing - ${DOCKER_TAG}"
-	@docker push 401334847138.dkr.ecr.eu-west-1.amazonaws.com/oth/xdsgenerator:${DOCKER_TAG}
-
-release: clean setup ecr-login buildcontainer tag-container push-to-ecr ## Release component
-	@echo "Built docker container and pushed to AWS... $(TAG)"
-	@if [ ! -d release ]; then mkdir release; fi
-ifeq ($(TAG), master)
-	git archive --format zip --output release/xdsgenerator.zip origin/master
-else
-	git archive --format zip --output release/xdsgenerator.zip $(TAG)
-endif
-
-dockerize: ## Dockerize component
-	@echo "Docker image already build and pushed as part of release target"
+docker-app-logs: ## Application logs from docker container
+	@docker exec -it kih-xds-generator tail -F /var/log/xdsgenerator/stdout/current /var/log/xdsgenerator/tomcat/1
 
 ## #################################################################
 ## Generate help
@@ -124,16 +98,4 @@ format:= "%-20s %s\n"
 endif
 
 help: ## This help
-	@printf '=%.0s' {1..80}
-	@echo -e "\nStandard OTH targets:"
-	@printf '=%.0s' {1..80}
-	@echo
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) |grep -v "###"| sort | awk 'BEGIN {FS = ":.*?## "}; {printf ${format}, $$1, $$2}'
-	@echo
-	@printf '=%.0s' {1..80}
-	@echo -e "\nExtra targets:"
-	@printf '=%.0s' {1..80}
-	@echo
-	@grep -E '^[a-zA-Z_-]+:.*?### .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?### "}; {printf ${format}, $$1, $$2}'
-
-.PHONY: clean setup format compile test start set-version tag release dockerize help bootRun buildcontainer ecr-login tag-container push-to-ecr testtarget
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf ${format}, $$1, $$2}'
