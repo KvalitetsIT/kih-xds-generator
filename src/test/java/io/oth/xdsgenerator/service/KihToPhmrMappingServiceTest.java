@@ -89,7 +89,6 @@ class KihToPhmrMappingServiceTest {
             thrown = e;
         }
 
-        assertTrue(false);
         // Then
         assertNotNull(thrown);
         assertTrue(thrown.getMessage().contains("Citizen skal være sat"));
