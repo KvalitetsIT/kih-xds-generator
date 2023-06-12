@@ -8,7 +8,7 @@ BRANCH := "master"
 TAG ?=
 
 ifndef TAG
-DOCKER_TAG := master
+DOCKER_TAG := latest
 TAG := master
 else
 DOCKER_TAG := ${TAG}
