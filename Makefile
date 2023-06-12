@@ -71,13 +71,10 @@ build-test-container: ## Builds docker container for running tests
 docker-run-tests: build-test-container ## Runs tests in container
 	docker run --rm --name docker-run-tests test-container
 
-docker-run: build-container ## Runs application in container
-	docker run --rm --name kih-xds-generator --network openteledev -p 9010:9010 kvalitetsit/kih-xds-generator:${DOCKER_TAG}
+docker-run: build-container start-xdsregistryproxy ## Runs application in container
+	docker run --rm --name kih-xds-generator --network dds_net -p 9010:9010 kvalitetsit/kih-xds-generator:${DOCKER_TAG}
 
-docker-run: build-container ## Runs application in container
-	docker run --rm --name kih-xds-generator --network openteledev -p 9010:9010 kvalitetsit/kih-xds-generator:${DOCKER_TAG}
-
-docker-stop: ## Stop running container
+docker-stop: stop-xdsregistryproxy ## Stop running container
 	@docker stop kih-xds-generator
 
 docker-enter: ## Enter container
@@ -85,6 +82,12 @@ docker-enter: ## Enter container
 
 docker-app-logs: ## Application logs from docker container
 	@docker exec -it kih-xds-generator tail -F /var/log/xdsgenerator/stdout/current /var/log/xdsgenerator/tomcat/1
+
+start-xdsregistryproxy: ## Start xdsregistryproxy docker compose setup
+	docker compose -f docker/compose/test/docker-compose.yml up -d
+
+stop-xdsregistryproxy: ## Stop xdsregistryproxy docker compose setup
+	docker compose -f docker/compose/test/docker-compose.yml down
 
 ## #################################################################
 ## Generate help

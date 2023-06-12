@@ -45,25 +45,24 @@ xds:
     # set to false for kih repo
     documentid: true
   iti41:
-    endpoint: http://localhost:8020/axis2/services/xdsrepositoryb
+    endpoint: http://dgwsxdsvalidationproxy41:8080/kih-iti41/iti41
 
 
 sor:
   code: 6071000016008
   name: TeleCare Nord
 
-
 # DGWS Setup for vaults and what note
 dgws:
-  enabled: false
+  enabled: true
   sts:
     url: https://test2.ekstern-test.nspop.dk:8443/sts/services/SecurityTokenService
   keystore:
     type: production
-    alias: nets danid a/s - tu voces gyldig
-    filename: file:/app/conf/VOCES_gyldig_2022.p12
+    alias: tu generel foces gyldig (funktionscertifikat)
+    filename: file:/app/conf/FOCES_gyldig_2025.p12
     password: Test1234
   certificate:
     itsystem: TRUST2408 Systemtest XIX CA
-    orgname: NETS DANID A/S
+    orgname: TU GENEREL FOCES gyldig (funktionscertifikat)
     cvr: 30808460

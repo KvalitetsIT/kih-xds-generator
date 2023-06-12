@@ -40,6 +40,7 @@ dependencies {
     implementation files("lib/builders-bcfa38bef51fce1c85446be5469c9fb2fd7a4b99.jar")
     implementation (group: 'dk.sosi.seal', name: 'seal', version: '2.6.22') {
         exclude group: "axis", module: "axis-wsdl4j"
+        exclude group: "com.unboundid", module: "unboundid-ldapsdk"
     }
     implementation("org.apache.santuario:xmlsec:1.4.8") {
         exclude group: "commons-logging", module: "commons-logging"

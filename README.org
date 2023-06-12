@@ -188,6 +188,9 @@ The following settings are application specific settings, and will be documented
 | dgws:certificate:orgname  | string  | Name of organisation                        |
 | dgws:certificate:cvr      | string  | The CVR number of the organisation          |
 
+* local xds repository
+When running locally it is beneficial to call a local xds repository.
+docker/compose/test/docker-compose.yml contains a setup for the xds repository with an validation proxy in front of it.
 
 # Local Variables:
 # eval: (message "After save")
