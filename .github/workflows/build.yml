@@ -43,28 +43,28 @@ jobs:
         run: make docker-run-tests
 
       - name: Tag service dev docker image
-        run: ./build/docker-tag.sh ${{ env.DOCKER_SERVICE }}:latest ${{ env.DOCKER_SERVICE }}:dev
+        run: ./ci-build/docker-tag.sh ${{ env.DOCKER_SERVICE }}:latest ${{ env.DOCKER_SERVICE }}:dev
 
       - name: Push service dev docker image
-        run: ./build/docker-push.sh ${{ env.DOCKER_SERVICE }}:dev
+        run: ./ci-build/docker-push.sh ${{ env.DOCKER_SERVICE }}:dev
 
       - name: Tag service git id docker image
-        run: ./build/docker-tag.sh ${{ env.DOCKER_SERVICE }}:latest ${{ env.DOCKER_SERVICE }}:${{ github.sha }}
+        run: ./ci-build/docker-tag.sh ${{ env.DOCKER_SERVICE }}:latest ${{ env.DOCKER_SERVICE }}:${{ github.sha }}
 
       - name: Push service git id docker image.
-        run: ./build/docker-push.sh ${{ env.DOCKER_SERVICE }}:${{ github.sha }}
+        run: ./ci-build/docker-push.sh ${{ env.DOCKER_SERVICE }}:${{ github.sha }}
 
       - name: Push latest service docker image
         if: ${{ steps.tag.conclusion != 'skipped' }}
-        run: ./build/docker-push.sh ${{ env.DOCKER_SERVICE }}:latest
+        run: ./ci-build/docker-push.sh ${{ env.DOCKER_SERVICE }}:latest
 
       - name: Tag version service docker image
         if: ${{ steps.tag.conclusion != 'skipped' }}
-        run: ./build/docker-tag.sh ${{ env.DOCKER_SERVICE }}:latest ${{ env.DOCKER_SERVICE }}:${{ steps.tag.outputs.VERSION }}
+        run: ./ci-build/docker-tag.sh ${{ env.DOCKER_SERVICE }}:latest ${{ env.DOCKER_SERVICE }}:${{ steps.tag.outputs.VERSION }}
 
       - name: Push version service docker image.
         if: ${{ steps.tag.conclusion != 'skipped' }}
-        run: ./build/docker-push.sh ${{ env.DOCKER_SERVICE }}:${{ steps.tag.outputs.VERSION }}
+        run: ./ci-build/docker-push.sh ${{ env.DOCKER_SERVICE }}:${{ steps.tag.outputs.VERSION }}
 
       - name: Create Release Notes
         uses: softprops/action-gh-release@v1
