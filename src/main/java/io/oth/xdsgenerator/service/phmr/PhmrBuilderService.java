@@ -202,12 +202,16 @@ public class PhmrBuilderService {
         }
 
         builder.setName(o.getName());
-        builder.setAddress(createFromAddress((i != null ? i.getAddress() : null), Use.WorkPlace));
-        if (i != null && i.getTelecoms() != null) {
-            for (io.oth.xdsgenerator.model.phmr.Telecom telecom : i.getTelecoms()) {
-                builder.addTelecom(Use.valueOf(telecom.getUse()), telecom.getProtocol(), telecom.getTelecomString());
+        if (i != null) {
+            builder.setAddress(createFromAddress((i.getAddress()), Use.WorkPlace));
+
+            if (i.getTelecoms() != null) {
+                for (io.oth.xdsgenerator.model.phmr.Telecom telecom : i.getTelecoms()) {
+                    builder.addTelecom(Use.valueOf(telecom.getUse()), telecom.getProtocol(), telecom.getTelecomString());
+                }
             }
         }
+
         return builder.build();
     }
 
