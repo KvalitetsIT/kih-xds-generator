@@ -361,18 +361,19 @@ public class PhmrBuilderService {
 
         log.debug("Input address: " + a);
 
-        if (a != null && a.getAddressLines() != null) {
+        if(a == null) {
+            return null;
+        }
+
+        if (a.getAddressLines() != null) {
             for (String addressLine : a.getAddressLines()) {
                 builder.addAddressLine(addressLine);
             }
-        } else {
-            log.debug("Set address to N/A");
-            builder.addAddressLine(null);
         }
-        builder.setCity((a != null && a.getCity() != null ? a.getCity() : null));
-        builder.setPostalCode((a != null && a.getPostalCode() != null ? a.getPostalCode() : null));
-        builder.setCountry((a != null && a.getCountry() != null ? a.getCountry() : null));
-        builder.setUse((a != null && a.getUse() != null ? Use.valueOf(a.getUse()) : defaultUse));
+        builder.setCity((a.getCity() != null ? a.getCity() : null));
+        builder.setPostalCode((a.getPostalCode() != null ? a.getPostalCode() : null));
+        builder.setCountry((a.getCountry() != null ? a.getCountry() : null));
+        builder.setUse((a.getUse() != null ? Use.valueOf(a.getUse()) : defaultUse));
         return builder.build();
     }
 }
