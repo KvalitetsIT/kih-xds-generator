@@ -18,8 +18,6 @@ public class KihToPhmrMappingService {
     private static final List<String> VITAL_SIGN_CODES = new ArrayList<String>(
             Arrays.asList("NPU03011", "DNK05472","DNK05473", "NPU21692", "NPU08676"));
 
-    private static final String KIH_ENUM_PROFESSIONAL_PRODUCER = "PNT";
-
     private static final String KIH_ENUM_USE_WORK = "W";
 
     private static final String PHR_ENUM_PRODUCER_HEALTHCARE_PROFESSIONAL = "HealthcareProfessional";
@@ -85,7 +83,6 @@ public class KihToPhmrMappingService {
 
         // Set author, custodian and legal authenticator
         request.setAuthorOrganisation(defaultOrganisation);
-        //request.setAuthor(mapAssignedEntityToIdentity(author.getAssignedAuthor()));
 
         if (collection.getSelfMonitoringSamples() != null) {
             for (SelfMonitoringSamples s : collection.getSelfMonitoringSamples()) {
@@ -144,40 +141,10 @@ public class KihToPhmrMappingService {
             }
         }
 
-        // if (collection.getCustodian() != null && collection.getCustodian().getAssignedCustodian() != null) {
-        //     AssignedCustodian custodian = collection.getCustodian().getAssignedCustodian();
-
-        //     request.setCustodian(mapAssignedCustodianToIdentity(custodian));
-
-        //     if (custodian.getRepresentedCustodianOrganization() != null) {
-        //         Organisation organisation = new Organisation();
-        //         organisation.setName(custodian.getRepresentedCustodianOrganization().getName());
-        //         request.setCustodianOrganisation(organisation);
-        //     }
-        // } else {
-        //     request.setCustodianOrganisation(request.getAuthorOrganisation());
-        // }
-
         // Hard code custion to the same as author.
         request.setCustodianOrganisation(request.getAuthorOrganisation());
         return request;
     }
-
-    // private Organisation mapToOrganisation(String createdBy) {
-    //     Organisation retVal = null;
-
-    //     if (createdByToSorCodeMap.containsKey(createdBy)) {
-    //         retVal = createdByToSorCodeMap.get(createdBy);
-    //     }
-
-    //     if (null == retVal) {
-
-    //         retVal = defaultOrganisation;
-    //     }
-
-    //     LOGGER.debug("Returning organisation " + retVal);
-    //     return retVal;
-    // }
 
     private boolean shouldAddEquipment(List<MedicalEquipment> equipments, MedicalEquipment equipment) {
         for (MedicalEquipment e : equipments) {
@@ -190,7 +157,6 @@ public class KihToPhmrMappingService {
 
     private static final String MEASUREMENT_TRANSFERED_BY_HCPROF = "typedbyhcprof";
     private static final String MEASUREMENT_TRANSFERED_BY_TYPED = "typed";
-    private static final String MEASUREMENT_TRANSFERED_BY_AUTOMATIC = "automatic";
 
     private ClinicalMeasurement mapReport(LaboratoryReport report) {
 
@@ -236,10 +202,6 @@ public class KihToPhmrMappingService {
                     measurement.setContextPerformerType(PHR_ENUM_PRODUCER_HEALTHCARE_PROFESSIONAL);
                     measurement.setContextTransferedMethod(PHR_ENUM_PRODUCER_TYPED_HCPRO);
                     break;
-                case MEASUREMENT_TRANSFERED_BY_AUTOMATIC:
-                    measurement.setContextPerformerType(PHR_ENUM_PRODUCER_HEALTHCARE_CITIZEN);
-                    measurement.setContextTransferedMethod(PHR_ENUM_PRODUCER_AUTOMATIC);
-                    break;
                 default:
                     measurement.setContextPerformerType(PHR_ENUM_PRODUCER_HEALTHCARE_CITIZEN);
                     measurement.setContextTransferedMethod(PHR_ENUM_PRODUCER_AUTOMATIC);
@@ -265,20 +227,6 @@ public class KihToPhmrMappingService {
         setNamesOnIdentity(identity, entity.getAssignedPerson());
 
         setPhoneAndEmailOnIdentity(identity, entity.getPhoneNumberSubscriber(), entity.getEmailAddress());
-
-        return identity;
-    }
-
-    private Identity mapAssignedCustodianToIdentity(AssignedCustodian custodian) {
-        Identity identity = new Identity();
-
-        identity.setAddress(
-                mapAddressPostal(custodian.getRepresentedCustodianOrganization().getAddress(), PHR_ENUM_USE_WORKPLACE));
-
-        setPhoneAndEmailOnIdentity(identity,
-                new PhoneNumberSubscriber[] {
-                        custodian.getRepresentedCustodianOrganization().getPhoneNumberSubscriber() },
-                new EmailAddress[] {});
 
         return identity;
     }

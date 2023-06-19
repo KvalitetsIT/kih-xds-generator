@@ -17,7 +17,6 @@ import io.oth.xdsgenerator.model.phmr.*;
 import io.oth.xdsgenerator.util.MeasurementHtmlTableGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.UUID;
@@ -43,8 +42,9 @@ public class PhmrBuilderService {
 
     /**
      * Builds a @class PhmrAndMetadata object storing both the actual document and also metadata for it
-     * @param request  The request to be converted
-     * @return  the PHMR DOcument and metadata
+     *
+     * @param request The request to be converted
+     * @return the PHMR DOcument and metadata
      */
     public PhmrAndMetadata buildPhmrClinicalDocument(PersonalHealthMonitoringReportRequest request) {
         Date documentCreationTime = new Date();
@@ -202,12 +202,16 @@ public class PhmrBuilderService {
         }
 
         builder.setName(o.getName());
-        builder.setAddress(createFromAddress((i != null ? i.getAddress() : null), Use.WorkPlace));
-        if (i != null && i.getTelecoms() != null) {
-            for (io.oth.xdsgenerator.model.phmr.Telecom telecom : i.getTelecoms()) {
-                builder.addTelecom(Use.valueOf(telecom.getUse()), telecom.getProtocol(), telecom.getTelecomString());
+        if (i != null) {
+            builder.setAddress(createFromAddress((i.getAddress()), Use.WorkPlace));
+
+            if (i.getTelecoms() != null) {
+                for (io.oth.xdsgenerator.model.phmr.Telecom telecom : i.getTelecoms()) {
+                    builder.addTelecom(Use.valueOf(telecom.getUse()), telecom.getProtocol(), telecom.getTelecomString());
+                }
             }
         }
+
         return builder.build();
     }
 
@@ -231,9 +235,9 @@ public class PhmrBuilderService {
             DataInputContext creationContext = null;
 
             //if ("automatic" == measurement.getContextTransferedMethod()) {
-            creationContext=  new DataInputContext(ProvisionMethod.valueOf(measurement.contextTransferMethod),
-                                PerformerType.valueOf(measurement.getContextPerformerType()));
-                //}
+            creationContext = new DataInputContext(ProvisionMethod.valueOf(measurement.contextTransferMethod),
+                    PerformerType.valueOf(measurement.getContextPerformerType()));
+            //}
 
             log.debug("Setting up data input context to {}", creationContext);
 
@@ -260,32 +264,29 @@ public class PhmrBuilderService {
 
     private Patient createFromIdentity(Identity patient) {
 
-        Patient.PatientBuilder builder = new Patient.PatientBuilder((patient != null ? patient.getFamilyName() : "N/A"));
+        if (patient == null) {
+            return null;
+        }
 
-        if (patient != null && patient.getGivenNames() != null) {
+        Patient.PatientBuilder builder = new Patient.PatientBuilder((patient.getFamilyName()));
+
+        if (patient.getGivenNames() != null) {
             for (String givenName : patient.getGivenNames()) {
                 builder.addGivenName(givenName);
             }
-        } else {
-            builder.addGivenName("N/A");
         }
 
-        if (patient != null && patient.getTelecoms() != null) {
+        if (patient.getTelecoms() != null) {
             for (io.oth.xdsgenerator.model.phmr.Telecom telecom : patient.getTelecoms()) {
                 builder.addTelecom(Use.valueOf(telecom.getUse()), telecom.getProtocol(), telecom.getTelecomString());
             }
         }
 
-        if (patient != null) {
-            ID patientId = new IDBuilder().setRoot(patientIdRoot).setExtension(patient.getPatientIdentifier()).setAuthorityName(patientIdDisplayName).build();
-            builder.setPersonID(patientId);
-        } else { //TODO: hvornår giver det mening ikke at have et cpr nummer?
-            ID patientId = new IDBuilder().setRoot(patientIdRoot).setExtension("N/A").setAuthorityName(patientIdDisplayName).build();
-            builder.setPersonID(patientId);
-        }
+        ID patientId = new IDBuilder().setRoot(patientIdRoot).setExtension(patient.getPatientIdentifier()).setAuthorityName(patientIdDisplayName).build();
+        builder.setPersonID(patientId);
 
-        builder.setAddress(createFromAddress((patient != null ? patient.getAddress() : null), Use.HomeAddress));
-        if (patient != null && patient.getPatientIdentifier() != null) {
+        builder.setAddress(createFromAddress((patient.getAddress()), Use.HomeAddress));
+        if (patient.getPatientIdentifier() != null) {
             int[] birthTime = calculateBirthTimeFromCPR(patient.getPatientIdentifier());
             if (birthTime != null) {
                 builder.setBirthTime(birthTime[0], birthTime[1] - 1, birthTime[2]);
@@ -361,18 +362,19 @@ public class PhmrBuilderService {
 
         log.debug("Input address: " + a);
 
-        if (a != null && a.getAddressLines() != null) {
+        if (a == null) {
+            return null;
+        }
+
+        if (a.getAddressLines() != null) {
             for (String addressLine : a.getAddressLines()) {
                 builder.addAddressLine(addressLine);
             }
-        } else {
-            log.debug("Set address to N/A");
-            builder.addAddressLine("N/A");
         }
-        builder.setCity((a != null && a.getCity() != null ? a.getCity() : "N/A"));
-        builder.setPostalCode((a != null && a.getPostalCode() != null ? a.getPostalCode() : "N/A"));
-        builder.setCountry((a != null && a.getCountry() != null ? a.getCountry() : "N/A"));
-        builder.setUse((a != null && a.getUse() != null ? Use.valueOf(a.getUse()) : defaultUse));
+        builder.setCity((a.getCity() != null ? a.getCity() : null));
+        builder.setPostalCode((a.getPostalCode() != null ? a.getPostalCode() : null));
+        builder.setCountry((a.getCountry() != null ? a.getCountry() : null));
+        builder.setUse((a.getUse() != null ? Use.valueOf(a.getUse()) : defaultUse));
         return builder.build();
     }
 }

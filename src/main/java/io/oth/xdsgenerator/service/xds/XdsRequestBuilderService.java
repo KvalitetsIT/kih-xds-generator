@@ -87,7 +87,7 @@ public class XdsRequestBuilderService {
         }
 
         //author.authorperson
-        if (cdaDocumentMetadata.getAuthorPerson() != null && (cdaDocumentMetadata.getAuthorPerson().getFamilyName() != null) || cdaDocumentMetadata.getAuthorPerson().getGivenName() != null) {
+        if (cdaDocumentMetadata.getAuthorPerson() != null && (cdaDocumentMetadata.getAuthorPerson().getFamilyName() != null || cdaDocumentMetadata.getAuthorPerson().getGivenName() != null)) {
             Name<?> authorName = new XcnName();
 
             if (cdaDocumentMetadata.getAuthorPerson().getFamilyName() != null) {
