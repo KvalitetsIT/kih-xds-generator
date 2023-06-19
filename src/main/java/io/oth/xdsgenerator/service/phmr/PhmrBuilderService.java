@@ -367,11 +367,11 @@ public class PhmrBuilderService {
             }
         } else {
             log.debug("Set address to N/A");
-            builder.addAddressLine("N/A");
+            builder.addAddressLine(null);
         }
-        builder.setCity((a != null && a.getCity() != null ? a.getCity() : "N/A"));
-        builder.setPostalCode((a != null && a.getPostalCode() != null ? a.getPostalCode() : "N/A"));
-        builder.setCountry((a != null && a.getCountry() != null ? a.getCountry() : "N/A"));
+        builder.setCity((a != null && a.getCity() != null ? a.getCity() : null));
+        builder.setPostalCode((a != null && a.getPostalCode() != null ? a.getPostalCode() : null));
+        builder.setCountry((a != null && a.getCountry() != null ? a.getCountry() : null));
         builder.setUse((a != null && a.getUse() != null ? Use.valueOf(a.getUse()) : defaultUse));
         return builder.build();
     }
