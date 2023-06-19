@@ -38,9 +38,6 @@ public class CdaMetaDataFactory {
             cdaDocumentMetadata.setAvailabilityStatus(AvailabilityStatus.APPROVED);
             cdaDocumentMetadata.setObjectType(DocumentEntryType.STABLE);
 
-            // cdaDocumentMetadata.setHealthcareFacilityTypeCode(new
-            // Code("550621000005101","hjemmesygepleje","2.16.840.1.113883.6.96"));
-
             log.debug("ClassCode is: " + cdaDocumentMetadata.getClassCode());
             log.debug("FormatCode is" + cdaDocumentMetadata.getFormatCode());
             log.debug("HealthcareFacilityTypeCode is: " + cdaDocumentMetadata.getHealthcareFacilityTypeCode());
@@ -52,8 +49,6 @@ public class CdaMetaDataFactory {
             log.debug("Objecttype is: " + cdaDocumentMetadata.getObjectType());
 
         }
-
-        // ensureBackwardCompatibility(cdaDocumentMetadata);
 
         getMetadataFromDocument(cdaDocumentMetadata, document);
         log.debug("After getMetadataFromDocument()");
@@ -71,18 +66,6 @@ public class CdaMetaDataFactory {
         log.debug("Returning from  cda metadata map");
         return cdaDocumentMetadata;
     }
-
-    // private void ensureBackwardCompatibility(DocumentMetadata cdaMetadata) {
-    // //in order to keep backward compatibility fill in data which was not expected
-    // to be filled in at first
-    // if (cdaMetadata.getAvailabilityStatus() == null) {
-    // cdaMetadata.setAvailabilityStatus(AvailabilityStatus.APPROVED);
-
-    // }
-    // if (cdaMetadata.getClassCode() == null) {
-    // cdaMetadata.setObjectType(DocumentEntryType.STABLE);
-    // }
-    // }
 
     private void getMetadataFromDocument(DocumentMetadata cdaDocumentMetadata, String document) {
         log.debug("Starting metadata mpa from document");
