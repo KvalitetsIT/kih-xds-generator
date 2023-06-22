@@ -34,7 +34,5 @@ COPY --from=builder /app/build/libs/xds-generator-$VERSION.jar /app/xds-generato
 RUN apk add --no-cache curl openjdk11-jre-headless ca-certificates nss && \
     echo "Build complete"
 
-COPY docker/conf/ /app/conf/
-
 EXPOSE 9010
-ENTRYPOINT exec java -jar /app/xds-generator.jar --spring.config.location=file:/app/conf/application.yaml
+ENTRYPOINT exec java -jar /app/xds-generator.jar
