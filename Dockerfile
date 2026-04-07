@@ -1,4 +1,4 @@
-FROM openjdk:11-jdk as builder
+FROM ibm-semeru-runtimes:open-11.0.30_7.1-jdk as builder
 
 ARG version=1.0.0
 ENV VERSION=$version
@@ -28,6 +28,10 @@ ENV ENV=production \
     LANG=C.UTF-8
 
 RUN mkdir /app
+
+RUN mkdir -p /app/conf
+
+COPY src/main/resources/NSP_Test_Service_Consumer_sds_NEW.p12 /app/conf/NSP_Test_Service_Consumer_sds_NEW.p12
 
 COPY --from=builder /app/build/libs/xds-generator-$VERSION.jar /app/xds-generator.jar
 

@@ -58,11 +58,11 @@ dgws:
   sts:
     url: https://test2.ekstern-test.nspop.dk:8443/sts/services/SecurityTokenService
   keystore:
-    type: production
-    alias: tu generel foces gyldig (funktionscertifikat)
-    filename: file:/app/conf/FOCES_gyldig_2025.p12
+    type: test
+    alias: 1
+    filename: file:/app/conf/NSP_Test_Service_Consumer_sds_NEW.p12
     password: Test1234
   certificate:
-    itsystem: TRUST2408 Systemtest XIX CA
-    orgname: TU GENEREL FOCES gyldig (funktionscertifikat)
-    cvr: 30808460
+    itsystem: Den Danske Stat OCES udstedende-CA 1
+    orgname: NSP Test Service Consumer
+    cvr: 33257872

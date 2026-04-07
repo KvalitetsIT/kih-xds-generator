@@ -49,180 +49,191 @@ import java.security.cert.X509Certificate;
  */
 @Component
 public class SosiUtil {
-	private static Logger log = LoggerFactory.getLogger(SosiUtil.class);
-	private IDCard idCard = null;
 
-	private static Object mutex = new Object();
+    private static Logger log = LoggerFactory.getLogger(SosiUtil.class);
+    private IDCard idCard = null;
 
-	protected SOSIFactory sosiFactory;
+    private static Object mutex = new Object();
 
-	protected CredentialVault credentialVault;
+    protected SOSIFactory sosiFactory;
 
-	@Autowired
-	protected STSRequestHelper requestHelper;
+    protected CredentialVault credentialVault;
 
-	@Value("${dgws.keystore.type}")
-	private String keystoreType;
+    @Autowired
+    protected STSRequestHelper requestHelper;
 
-	@Autowired
-	private ResourceLoader resourceLoader;
+    @Value("${dgws.keystore.type}")
+    private String keystoreType;
 
-	@Value("${dgws.certificate.itsystem}")
-	private String itsystem;
+    @Autowired
+    private ResourceLoader resourceLoader;
 
-	@Value("${dgws.certificate.cvr}")
-	private String cvr;
+    @Value("${dgws.certificate.itsystem}")
+    private String itsystem;
 
-	@Value("${dgws.certificate.orgname}")
-	private String orgname;
+    @Value("${dgws.certificate.cvr}")
+    private String cvr;
 
-	@Value("${dgws.keystore.alias}")
-	private String keystoreAlias;
+    @Value("${dgws.certificate.orgname}")
+    private String orgname;
 
-	@Value("${dgws.keystore.filename}")
-	private String keystoreFilename;
+    @Value("${dgws.keystore.alias}")
+    private String keystoreAlias;
 
-	@Value("${dgws.keystore.password}")
-	private String keystorePassword;
+    @Value("${dgws.keystore.filename}")
+    private String keystoreFilename;
 
+    @Value("${dgws.keystore.password}")
+    private String keystorePassword;
 
-	@PostConstruct
-	public void init() throws ModelException, CredentialVaultException, KeyStoreException, IOException {
-		log.info("Initializing the sosi utility - setting up Credentials etc.");
-		synchronized (mutex) {
-			Properties props = new Properties(System.getProperties());
-			props.setProperty(SOSIFactory.PROPERTYNAME_SOSI_VALIDATE, Boolean.toString(true));
-			this.credentialVault = createCredentialVault();
-			if (keystoreType.equalsIgnoreCase("production")) {
-				log.info("Creating SOSI production federation");
-				this.sosiFactory = new SOSIFactory(new SOSIFederation(new Properties()), getVault(), props);
-			} else {
-				log.info("Creating SOSI test federation");
-				this.sosiFactory = new SOSIFactory(new SOSITestFederation(new Properties()), getVault(), props);
+    @PostConstruct
+    public void init() throws ModelException, CredentialVaultException, KeyStoreException, IOException {
+        log.info("Initializing the sosi utility - setting up Credentials etc.");
+        synchronized (mutex) {
+            Properties props = new Properties(System.getProperties());
+            props.setProperty(SOSIFactory.PROPERTYNAME_SOSI_VALIDATE, Boolean.toString(true));
+            this.credentialVault = createCredentialVault();
+            if (keystoreType.equalsIgnoreCase("production")) {
+                log.info("Creating SOSI production federation");
+                this.sosiFactory = new SOSIFactory(new SOSIFederation(new Properties()), getVault(), props);
+            } else {
+                log.info("Creating SOSI test federation");
+                this.sosiFactory = new SOSIFactory(new SOSITestFederation(new Properties()), getVault(), props);
 
-			}
-		}
-	}
+            }
+        }
+    }
 
-	protected Document generateTokenRequest(CredentialVault vault, SOSIFactory sosiFactory) {
-		X509Certificate cert = vault.getSystemCredentialPair().getCertificate();
-		CareProvider careProvider = new CareProvider(SubjectIdentifierTypeValues.CVR_NUMBER, getCvr(), getOrgName());
-		SystemIDCard selfSignedSystemIdCard = sosiFactory.createNewSystemIDCard(getItSystem(), careProvider,
-				AuthenticationLevel.VOCES_TRUSTED_SYSTEM, null, null, cert, null);
+    protected Document generateTokenRequest(CredentialVault vault, SOSIFactory sosiFactory) {
+        X509Certificate cert = vault.getSystemCredentialPair().getCertificate();
+        CareProvider careProvider = new CareProvider(SubjectIdentifierTypeValues.CVR_NUMBER, getCvr(), getOrgName());
+        SystemIDCard selfSignedSystemIdCard = sosiFactory.createNewSystemIDCard(getItSystem(), careProvider,
+                AuthenticationLevel.VOCES_TRUSTED_SYSTEM, null, null, cert, null);
 
-		SecurityTokenRequest securityTokenRequest = sosiFactory.createNewSecurityTokenRequest();
-		securityTokenRequest.setIDCard(selfSignedSystemIdCard);
-		Document doc = securityTokenRequest.serialize2DOMDocument();
-		return doc;
-	}
+        SecurityTokenRequest securityTokenRequest = sosiFactory.createNewSecurityTokenRequest();
+        securityTokenRequest.setIDCard(selfSignedSystemIdCard);
+        Document doc = securityTokenRequest.serialize2DOMDocument();
+        return doc;
+    }
 
-	public static CredentialVault getVaultFromFile(Resource r, String password, String alias) throws IOException {
-		return getVaultFromFile(r, password, alias, password);
-	}
+    public static CredentialVault getVaultFromFile(Resource r, String password, String alias) throws IOException {
+        return getVaultFromFile(r, password, alias, password);
+    }
 
-	public static CredentialVault getVaultFromFile(Resource r, String keyStorePassword, String alias,
-			String keyPassword) throws IOException {
-		InputStream in = r.getInputStream();
-		return getVaultFromInputStream(in, keyStorePassword, alias, keyPassword);
-	}
+    public static CredentialVault getVaultFromFile(Resource r, String keyStorePassword, String alias,
+            String keyPassword) throws IOException {
+        InputStream in = r.getInputStream();
+        return getVaultFromInputStream(in, keyStorePassword, alias, keyPassword);
+    }
 
-	public static CredentialVault getVaultFromInputStream(InputStream in, String keyStorePassword, String alias,
-			String keyPassword) throws IOException {
-		try {
-			KeyStore keyStore = KeyStore.getInstance("JKS");
-			keyStore.load(in, keyStorePassword.toCharArray());
-			X509Certificate certificate = (X509Certificate) keyStore.getCertificate(alias);
-			PrivateKey privateKey = (PrivateKey) keyStore.getKey(alias, keyPassword.toCharArray());
-			if (certificate != null && privateKey != null) {
-				return new CredentialVaultWrapper(certificate, privateKey);
-			}
-			return null;
-		} catch (KeyStoreException | NoSuchAlgorithmException | CertificateException | UnrecoverableKeyException e) {
-			throw new IOException("Fejl i indlæsning af den private nøgle", e);
-		}
-	}
+    public static CredentialVault getVaultFromInputStream(InputStream in, String keyStorePassword, String alias,
+            String keyPassword) throws IOException {
+        try {
+            //log.debug("Alias: " + alias, " keystorePassword: " + keyStorePassword + " keyPassword: " + keyPassword, "keyPassword: " + keyPassword);
+            KeyStore keyStore = KeyStore.getInstance("JKS");
+            keyStore.load(in, keyStorePassword.toCharArray());
+            java.util.Enumeration<String> aliases = keyStore.aliases();
+            /*while (aliases.hasMoreElements()) {
+                String foundAlias = aliases.nextElement();
+                log.debug("DEBUG: Java fandt dette alias i filen: '" + foundAlias + "'");
+            }*/
+            X509Certificate certificate = (X509Certificate) keyStore.getCertificate(alias);
+            PrivateKey privateKey = (PrivateKey) keyStore.getKey(alias, keyPassword.toCharArray());
 
-	public CredentialVault getVault() throws CredentialVaultException, IOException, KeyStoreException {
-		CredentialVault vault = credentialVault;
-		CredentialPair pair = vault.getSystemCredentialPair();
-		if (pair == null || pair.getCertificate() == null) {
-			throw new IOException("Could not load certificate from vault: "
-					+ vault.getKeyStore().getProvider().getName() + " with alias: " + CredentialVault.KEY_ALIAS_SYSTEM);
-		} else {
-			log.info("CredentialValue loaded correctly");
-			return vault;
-		}
-	}
+            if (certificate == null) {
+                log.error("Certifikatet blev IKKE fundet for alias: " + alias);
+            }
+            if (privateKey == null) {
+                log.error("Den private nøgle blev IKKE fundet for alias: " + alias);
+            }
 
-	public SOSIFactory getSOSIFactory() {
-		return this.sosiFactory;
-	}
+            if (certificate != null && privateKey != null) {
+                //log.debug("Certificate: " + certificate.getSubjectDN(), " PrivateKey: " + privateKey.toString());
+                return new CredentialVaultWrapper(certificate, privateKey);
+            }
+            return null;
+        } catch (KeyStoreException | NoSuchAlgorithmException | CertificateException | UnrecoverableKeyException e) {
+            throw new IOException("Fejl i indlæsning af den private nøgle", e);
+        }
+    }
 
-	private IDCard getTokenFromSTS() throws IOException,Fault {
-		Document doc = generateTokenRequest(credentialVault, sosiFactory);
+    public CredentialVault getVault() throws CredentialVaultException, IOException, KeyStoreException {
+        if (credentialVault == null) {
+            throw new IOException("CredentialVault was not initialized");
+        }
+        return credentialVault;
+    }
 
-		String requestXml = XmlUtil.node2String(doc, false, true);
-		String responseXml = requestHelper.sendRequest(requestXml);
-		SecurityTokenResponse securityTokenResponse = sosiFactory.deserializeSecurityTokenResponse(responseXml);
+    public SOSIFactory getSOSIFactory() {
+        return this.sosiFactory;
+    }
 
-		if (securityTokenResponse.isFault() || securityTokenResponse.getIDCard() == null) {
-			log.error("Sts says "+securityTokenResponse.getFaultString());
-			throw new Fault(new RuntimeException(securityTokenResponse.getFaultString()));
-		} else {
-			SystemIDCard stsSignedIdCard = (SystemIDCard) securityTokenResponse.getIDCard();
-			return stsSignedIdCard;
-		}
-	}
+    private IDCard getTokenFromSTS() throws IOException, Fault {
+        Document doc = generateTokenRequest(credentialVault, sosiFactory);
 
-	public CredentialVault createCredentialVault() {
-		try {
-			System.setProperty("dk.sosi.seal.vault.CredentialVault#Alias", keystoreAlias);
-			Resource resource = resourceLoader.getResource(keystoreFilename);
-			FileBasedCredentialVault vault = new FileBasedCredentialVault(new Properties(), resource.getFile(),
-					keystorePassword);
-			return vault;
-		} catch (CredentialVaultException | IOException e) {
-			log.error("Error creating credentialvault", e);
-			throw new RuntimeException(e);
-		}
-	}
+        String requestXml = XmlUtil.node2String(doc, false, true);
+        //log.debug("Full request to STS: " + requestXml);
+        String responseXml = requestHelper.sendRequest(requestXml);
+        //log.debug("Full response from STS: " + responseXml);
+        SecurityTokenResponse securityTokenResponse = sosiFactory.deserializeSecurityTokenResponse(responseXml);
 
-	public String getOrgName() {
-		return orgname;
-	}
+        if (securityTokenResponse.isFault() || securityTokenResponse.getIDCard() == null) {
+            log.error("Sts says " + securityTokenResponse.getFaultString());
+            throw new Fault(new RuntimeException(securityTokenResponse.getFaultString()));
+        } else {
+            SystemIDCard stsSignedIdCard = (SystemIDCard) securityTokenResponse.getIDCard();
+            return stsSignedIdCard;
+        }
+    }
 
-	public String getCvr() {
-		return cvr;
-	}
+    public CredentialVault createCredentialVault() {
+        try {
+            //log.debug("Nu aktiverer vi den manuelle indlæsning for: " + keystoreFilename);
+            Resource resource = resourceLoader.getResource(keystoreFilename);
+            return getVaultFromFile(resource, keystorePassword, keystoreAlias);
+        } catch (CredentialVaultException | IOException e) {
+            log.error("Error creating credentialvault", e);
+            throw new RuntimeException(e);
+        }
+    }
 
-	public String getItSystem() {
-		return itsystem;
-	}
+    public String getOrgName() {
+        return orgname;
+    }
 
-	/**
-	 * Creates document with sosi headers. Reuses id card from cache if still valid.
-	 */
-	public Document getSosiDocument() throws IOException {
-		Request request = sosiFactory.createNewRequest(false, null);
-		request.setIDCard(getTokenFromCache());
-		return request.serialize2DOMDocument();
-	}
+    public String getCvr() {
+        return cvr;
+    }
 
-	private IDCard cachedIDCard = null;
+    public String getItSystem() {
+        return itsystem;
+    }
 
-	/**
-	 * Returns cached id card or retrieves a new one from STS if needed.
-	 */
-	private synchronized IDCard getTokenFromCache() throws IOException, Fault {
-		long start = System.currentTimeMillis();
-		if (cachedIDCard == null || !cachedIDCard.isValidInTime()) {
+    /**
+     * Creates document with sosi headers. Reuses id card from cache if still
+     * valid.
+     */
+    public Document getSosiDocument() throws IOException {
+        Request request = sosiFactory.createNewRequest(false, null);
+        request.setIDCard(getTokenFromCache());
+        return request.serialize2DOMDocument();
+    }
 
-			cachedIDCard = getTokenFromSTS();
-		}
-		log.debug("IDCard " + cachedIDCard.getUsername() + " " + cachedIDCard.isValidInTime() + " "
-				+ cachedIDCard.getIDCardID());
-		log.info("action=idcard tt=" + (System.currentTimeMillis() - start) + " ms");
-		return cachedIDCard;
-	}
+    private IDCard cachedIDCard = null;
+
+    /**
+     * Returns cached id card or retrieves a new one from STS if needed.
+     */
+    private synchronized IDCard getTokenFromCache() throws IOException, Fault {
+        long start = System.currentTimeMillis();
+        if (cachedIDCard == null || !cachedIDCard.isValidInTime()) {
+
+            cachedIDCard = getTokenFromSTS();
+        }
+        log.debug("IDCard " + cachedIDCard.getUsername() + " " + cachedIDCard.isValidInTime() + " "
+                + cachedIDCard.getIDCardID());
+        log.warn("action=idcard tt=" + (System.currentTimeMillis() - start) + " ms");
+        return cachedIDCard;
+    }
 
 }

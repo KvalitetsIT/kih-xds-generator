@@ -29,79 +29,80 @@ import io.oth.xdsgenerator.service.xds.XdsRequestService;
 @RestController
 public class KihDataController extends AbstractController {
 
-  public static final Logger log = LoggerFactory.getLogger(KihDataController.class);
+    public static final Logger log = LoggerFactory.getLogger(KihDataController.class);
 
-  @Autowired
-  PhmrBuilderService phmrBuilderService;
+    @Autowired
+    PhmrBuilderService phmrBuilderService;
 
-  @Autowired
-  PhmrClinicalDocumentSerializer phmrClinicalDocumentSerializer;
+    @Autowired
+    PhmrClinicalDocumentSerializer phmrClinicalDocumentSerializer;
 
-  @Autowired
-  XdsRequestBuilderService xdsRequestBuilder;
+    @Autowired
+    XdsRequestBuilderService xdsRequestBuilder;
 
-  @Autowired
-  CdaMetaDataFactory cdaMetaDataFactory;
-  // @Autowired
-  // CdaService cdaService;
+    @Autowired
+    CdaMetaDataFactory cdaMetaDataFactory;
+    // @Autowired
+    // CdaService cdaService;
 
-  @Autowired
-  KihToPhmrMappingService mappingService;
+    @Autowired
+    KihToPhmrMappingService mappingService;
 
-  @Autowired
-  private XdsRequestService xdsRequestService;
+    @Autowired
+    private XdsRequestService xdsRequestService;
 
-  @Value("${log.document.content:false}")
-  private boolean reqLogIsAllowed;
+    @Value("${log.document.content:false}")
+    private boolean reqLogIsAllowed;
 
-  @RequestMapping(produces = MediaType.APPLICATION_XML_VALUE, value = "/api/createphmr", method = RequestMethod.POST)
-  public String createphmr(@RequestBody SelfMonitoringCollectionList collectionList) throws ServiceException {
-    long start = System.currentTimeMillis();
-    int measurements = 0;
-    String responseString = "";
+    @RequestMapping(produces = MediaType.APPLICATION_XML_VALUE, value = "/api/createphmr", method = RequestMethod.POST)
+    public String createphmr(@RequestBody SelfMonitoringCollectionList collectionList) throws ServiceException {
+        long start = System.currentTimeMillis();
+        int measurements = 0;
+        String responseString = "";
 
-    log.debug("ID from reqeust {}", collectionList.DocumentUUID);
+        log.debug("ID from reqeust {}", collectionList.DocumentUUID);
 
-    for (SelfMonitoringCollection collection : collectionList.getSelfMonitoringCollection()) {
-      if (reqLogIsAllowed) {
-        log.debug("SelfMonitoringCollection: {}", collection);
-      }
+        for (SelfMonitoringCollection collection : collectionList.getSelfMonitoringCollection()) {
+            if (reqLogIsAllowed) {
+                log.debug("SelfMonitoringCollection: {}", collection);
+            }
 
-      log.debug("Handling monitoring data");
-      log.debug("Mapping to PHMR format");
-      PersonalHealthMonitoringReportRequest request = mappingService.map(collection);
-      measurements += request.results.length + request.getVitalSigns().length;
-      log.debug("Building CDA");
-      PhmrAndMetadata documentResponse = phmrBuilderService.buildPhmrClinicalDocument(request);
-      PHMRXmlCodec phmrXmlCodec = new PHMRXmlCodec();
-      String phmrDocument = phmrXmlCodec.encode(documentResponse.getPhmr());
+            log.debug("Handling monitoring data");
+            log.debug("Mapping to PHMR format");
+            PersonalHealthMonitoringReportRequest request = mappingService.map(collection);
+            //log.debug("DEBUG: Request content: {}", request.toString());
+            measurements += request.results.length + request.getVitalSigns().length;
+            log.debug("Building CDA");
+            PhmrAndMetadata documentResponse = phmrBuilderService.buildPhmrClinicalDocument(request);
+            PHMRXmlCodec phmrXmlCodec = new PHMRXmlCodec();
+            String phmrDocument = phmrXmlCodec.encode(documentResponse.getPhmr());
 
-      log.debug("PHMR: " + phmrDocument);
+            log.debug("PHMR: " + phmrDocument);
 
-      log.debug("Generating cda metadata for xds");
-      DocumentMetadata cdaMetadata = cdaMetaDataFactory
-          .createFromCdaRegistrationRequest(documentResponse.getDocumentMetadata(), phmrDocument);
-      cdaMetadata.setUniqueId(collectionList.DocumentUUID);
+            log.debug("Generating cda metadata for xds");
+            DocumentMetadata cdaMetadata = cdaMetaDataFactory
+                    .createFromCdaRegistrationRequest(documentResponse.getDocumentMetadata(), phmrDocument);
+            cdaMetadata.setUniqueId(collectionList.DocumentUUID);
 
-      try {
-        log.debug("Invoking XDS repository");
-        responseString = xdsRequestService.createAndRegisterDocument(collectionList.DocumentUUID, phmrDocument,
-            cdaMetadata);
-      } catch (XdsException e) {
-        StringBuffer buf = new StringBuffer();
-        for (String err : e.getErrors()) {
-          buf.append("\"" + err + "\", ");
+            try {
+                log.debug("Invoking XDS repository");
+                responseString = xdsRequestService.createAndRegisterDocument(collectionList.DocumentUUID, phmrDocument,
+                        cdaMetadata);
+            } catch (XdsException e) {
+                StringBuffer buf = new StringBuffer();
+                for (String err : e.getErrors()) {
+                    buf.append("\"" + err + "\", ");
+                }
+
+                log.info("action=xdsexport status=failure tt={} measurements={}", (System.currentTimeMillis() - start), measurements);
+                throw new ServiceException("Error communicating with XDS: " + buf.toString());
+            }
+            log.debug("Returning DocumentID={}", responseString);
+
         }
 
-        log.info("action=xdsexport status=failure tt={} measurements={}", (System.currentTimeMillis() - start), measurements);
-        throw new ServiceException("Error communicating with XDS: " + buf.toString());
-      }
-      log.debug("Returning DocumentID={}", responseString);
-
+        log.info("action=xdsexport status=success tt={} measurements={}", (System.currentTimeMillis() - start), measurements);
+        return responseString;
     }
-
-    log.info("action=xdsexport status=success tt={} measurements={}", (System.currentTimeMillis() - start), measurements);
-    return responseString;
-  }
 
 }
